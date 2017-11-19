@@ -1,6 +1,8 @@
 import json
 import random
 import swipe
+import status
+import recommend
 
 '''
 Created September 22, 2017
@@ -8,7 +10,6 @@ Created September 22, 2017
 @author David Umphress & Mason Glover
 
 '''
-
 
 
 def dispatch(messageJson=None):
@@ -71,8 +72,6 @@ def dispatch(messageJson=None):
         resultDictionary[u"gameStatus"] = "underway"
         return resultDictionary
 
-
-
     #Validate JSONness of input be converting the string to an equivalent dictionary
     try:
         messageDictionary = json.loads(messageJson)
@@ -94,7 +93,11 @@ def dispatch(messageJson=None):
     if(messageDictionary[u"op"] == u"initializeGame"):
         resultDictionary = InitializeGame(messageDictionary)
     elif(messageDictionary[u"op"] == u"swipe"):
-        resultDictionary = swipe.Swipe(messageDictionary)
+        resultDictionary = swipe.swipe(messageDictionary)
+    elif (messageDictionary[u"op"] == u"recommend"):
+        resultDictionary = recommend.recommend(messageDictionary)
+    elif (messageDictionary[u"op"] == u"status"):
+        resultDictionary = status.status(messageDictionary)
     else:
         resultDictionary = buildErrorString('op is invalid')
 

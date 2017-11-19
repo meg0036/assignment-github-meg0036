@@ -39,25 +39,66 @@ def merge(array):
         array[i] = temp[i]
     return score
 
+def swipeAll(messageDictionary):
+        resultDictionary = {}
+        msg_board = messageDictionary[u"board"]
+        directions = ['left', 'right', 'up', 'down']
+        new_msg = {}
+        max_score = 0
+        max_board = {}
+        new_msg[u"board"] = msg_board
+        new_msg[u"op"] = u"swipe"
+        for i in range(4):
+            new_msg[u"direction"] = directions[i]
+            result_test = swipe(new_msg)
+            if result_test[u"gameStatus"] == "underway":
+                score = result_test[u"score"]
+                if score > max_score:
+                    max_score = score
+                    max_board = result_test[u"board"]
+        resultDictionary[u"score"] = max_score
+        resultDictionary[u"board"] = max_board
+        return resultDictionary
 
-def Swipe(messageDictionary):
+def swipe(messageDictionary):
     resultDictionary = {}
-
-    resultDictionary[u"score"] = 0
-    resultDictionary[u"board"] = {}
-
-    column = messageDictionary[u"board"][u"columnCount"]
-    row = messageDictionary[u"board"][u"rowCount"]
-    resultDictionary[u"board"][u"columnCount"] = column
-    resultDictionary[u"board"][u"rowCount"] = row
-    length = column * row
-    resultDictionary[u"board"][u"grid"] = [0] * length
-
+    if (u"board" not in messageDictionary):
+        return buildErrorString('missing board')
     if (u"direction" not in messageDictionary):
         return buildErrorString('missing direction')
     elif messageDictionary[u"direction"] not in ['up', 'down', 'left', 'right']:
         return buildErrorString('invalid direction')
 
+    if (u"columnCount" not in messageDictionary[u"board"]):
+        return buildErrorString('columnCount is not int the board')
+    elif not isinstance(messageDictionary[u"board"][u"columnCount"], int):
+        return buildErrorString('columnCount is not an integer')
+    elif not (
+                    messageDictionary[u"board"][u"columnCount"] > 1 and messageDictionary[u"board"][
+                u"columnCount"] < 100):
+        return buildErrorString('columnCount is out of bounds')
+    else:
+        column = messageDictionary[u"board"][u"columnCount"]
+
+    if (u"rowCount" not in messageDictionary[u"board"]):
+        return buildErrorString('rowCount is not in the board')
+    elif not isinstance(messageDictionary[u"board"][u"rowCount"], int):
+        return buildErrorString('rowCount is not an integer')
+    elif not (messageDictionary[u"board"][u"rowCount"] > 1 and messageDictionary[u"board"][u"rowCount"] < 100):
+        return buildErrorString('rowCount is out of bounds')
+    else:
+        row = messageDictionary[u"board"][u"rowCount"]
+
+    if (u"grid" not in messageDictionary[u"board"]):
+        return buildErrorString('grid is not in the board')
+
+    resultDictionary[u"score"] = 0
+    resultDictionary[u"board"] = {}
+
+    resultDictionary[u"board"][u"columnCount"] = column
+    resultDictionary[u"board"][u"rowCount"] = row
+    length = column * row
+    resultDictionary[u"board"][u"grid"] = [0] * length
     if length != len(messageDictionary[u"board"][u"grid"]):
         return buildErrorString('invalid board')
 
@@ -138,3 +179,5 @@ def Swipe(messageDictionary):
 
     resultDictionary[u"gameStatus"] = "underway"
     return resultDictionary
+
+
